@@ -29,8 +29,6 @@ export async function Log(
 ): Promise<void> {
   try {
     const token = process.env.NEXT_PUBLIC_BEARER_TOKEN;
-    console.log("Logger debugging:", { token: token ? "exists" : "missing", endpoint: LOG_ENDPOINT });
-
     if (!token) {
       console.warn("Logger: No token found in environment");
       return;
@@ -42,7 +40,6 @@ export async function Log(
       package: pkg,
       message: message.length > 48 ? message.substring(0, 45) + "..." : message,
     };
-    console.log("Logger payload:", payload);
 
     const response = await fetch(LOG_ENDPOINT, {
       method: "POST",
