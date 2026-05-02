@@ -51,10 +51,24 @@ export async function Log(
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        // Prevent console spam if session is expired
+        if (!(globalThis as any)._authErrorLogged) {
+          console.warn("Logger: Remote session expired (401). Logs will be redirected to console only.");
+          (globalThis as any)._authErrorLogged = true;
+        }
+        console.log(`[Remote Log Suppressed] ${level.toUpperCase()} [${pkg}]: ${message}`);
+        return;
+      }
+      
       const errorText = await response.text();
       console.error(`Log failed with status ${response.status}: ${errorText}`);
     }
   } catch (err) {
-    console.error("Logger encountered a network error:", err);
+    if (!(globalThis as any)._networkErrorLogged) {
+       console.error("Logger: Remote logging unavailable (Network Error). Logs redirected to console.");
+       (globalThis as any)._networkErrorLogged = true;
+    }
+    console.log(`[Remote Log Suppressed] ${level.toUpperCase()} [${pkg}]: ${message}`);
   }
 }
