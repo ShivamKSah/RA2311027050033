@@ -9,7 +9,7 @@
 import { Stack, Level, Package } from "./types";
 
 /** Evaluation service log endpoint */
-const LOG_ENDPOINT = "http://20.207.122.201/evaluation-service/logs";
+const LOG_ENDPOINT = "/api/proxy/evaluation-service/logs";
 
 /**
  * Sends a structured log entry to the remote logging service.
@@ -29,26 +29,35 @@ export async function Log(
 ): Promise<void> {
   try {
     const token = process.env.NEXT_PUBLIC_BEARER_TOKEN;
+    console.log("Logger debugging:", { token: token ? "exists" : "missing", endpoint: LOG_ENDPOINT });
 
     if (!token) {
-      // Cannot log without a token — fail silently
+      console.warn("Logger: No token found in environment");
       return;
     }
 
-    await fetch(LOG_ENDPOINT, {
+    const payload = {
+      stack,
+      level,
+      package: pkg,
+      message: message.length > 48 ? message.substring(0, 45) + "..." : message,
+    };
+    console.log("Logger payload:", payload);
+
+    const response = await fetch(LOG_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        stack,
-        level,
-        package: pkg,
-        message,
-      }),
+      body: JSON.stringify(payload),
     });
-  } catch {
-    // Silently catch all errors — logging must never crash the application
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Log failed with status ${response.status}: ${errorText}`);
+    }
+  } catch (err) {
+    console.error("Logger encountered a network error:", err);
   }
 }

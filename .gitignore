@@ -6,3 +6,6 @@ dist/
 build/
 .next/
 *.log
+*.tgz
+notification_app_fe_tmp/
+.DS_Store

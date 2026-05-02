@@ -8,7 +8,7 @@
  * Score Formula: score = (typeWeight × 1,000,000) + unixTimestamp
  */
 
-import { Log } from "../../../logging_middleware/src";
+import { Log } from "logging-middleware/src";
 
 /* ─── Types ──────────────────────────────────────────────────────────── */
 
