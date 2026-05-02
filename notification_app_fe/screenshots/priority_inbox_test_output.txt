@@ -1,0 +1,47 @@
+═══════════════════════════════════════════════════════════════
+  PRIORITY INBOX ALGORITHM — TEST RUNNER
+═══════════════════════════════════════════════════════════════
+  Total mock notifications: 18
+  Types: 6 Placement, 5 Result, 7 Event
+───────────────────────────────────────────────────────────────
+
+▶ TEST 1: getTopNNotifications(notifications, n=10)
+
+Rank | ID    | Type       | Score          | Timestamp            | Message
+─────┼───────┼────────────┼────────────────┼──────────────────────┼────────────────────────────────
+   1 | p001  | Placement  | 1,78,06,96,200 | 2026-05-02 10:00:00  | Google LLC hiring for SDE-1
+   2 | p002  | Placement  | 1,78,06,90,800 | 2026-05-02 08:30:00  | Microsoft Corporation hiring
+   3 | p003  | Placement  | 1,78,06,53,900 | 2026-05-01 22:15:00  | Apple Inc. hiring for iOS Dev
+   4 | p004  | Placement  | 1,78,06,24,200 | 2026-05-01 14:00:00  | Amazon hiring for Cloud Eng
+   5 | p005  | Placement  | 1,78,06,08,900 | 2026-05-01 09:45:00  | Netflix hiring for Backend
+   6 | p006  | Placement  | 1,78,05,52,200 | 2026-04-30 18:00:00  | Meta Platforms hiring
+   7 | r001  | Result     | 1,77,96,92,600 | 2026-05-02 09:00:00  | End-semester results published
+   8 | r002  | Result     | 1,77,96,45,800 | 2026-05-01 20:00:00  | Mid-semester grades available
+   9 | r003  | Result     | 1,77,96,29,600 | 2026-05-01 15:30:00  | Project review scores out
+  10 | r004  | Result     | 1,77,96,13,400 | 2026-05-01 11:00:00  | Internal assessment results
+
+───────────────────────────────────────────────────────────────
+✅ Top 10 results verified: Placement > Result > Event ordering
+   Within each type, more recent notifications rank higher
+
+▶ TEST 2: addNotification() — live heap insertion
+
+  Seeded heap with 5 notifications
+  Adding high-priority notification: ID=p999
+  Heap size after insertion: 5
+  Adding low-priority notification: ID=e999
+  Heap size after insertion: 5 (should still be 5)
+
+  Current heap contents (highest priority first):
+    1. [Placement] p999 — URGENT: Tesla hiring for AI Research (score: 1,78,06,99,800)
+    2. [Placement] p001 — Google LLC hiring for SDE-1 (score: 1,78,06,96,200)
+    3. [Placement] p002 — Microsoft Corporation hiring (score: 1,78,06,90,800)
+    4. [Placement] p003 — Apple Inc. hiring for iOS Dev (score: 1,78,06,53,900)
+    5. [Placement] p004 — Amazon hiring for Cloud Eng (score: 1,78,06,24,200)
+
+  Contains high-priority (p999): ✅ YES
+  Contains low-priority (e999):  ✅ NO (correctly discarded)
+
+═══════════════════════════════════════════════════════════════
+  ALL TESTS PASSED ✅
+═══════════════════════════════════════════════════════════════
