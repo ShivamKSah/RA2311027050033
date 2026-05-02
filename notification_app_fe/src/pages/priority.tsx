@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import Head from "next/head";
-import { Box, Container, Typography, Alert } from "@mui/material";
+import { Box, Container, Typography, Alert, Stack, Paper } from "@mui/material";
 import Navbar from "@/components/Navbar";
 import NotificationList from "@/components/NotificationList";
 import PriorityInboxFilter from "@/components/PriorityInboxFilter";
 import { useNotifications } from "@/hooks/useNotifications";
-import { getTopNNotifications, Notification } from "@/utils/priorityInbox";
+import { getTopNNotifications } from "@/utils/priorityInbox";
 import { ApiNotification } from "@/api/notificationsApi";
 import { Log } from "logging-middleware/src";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 
 const PriorityInboxPage: React.FC = () => {
   const [n, setN] = useState<number>(10);
@@ -15,7 +16,6 @@ const PriorityInboxPage: React.FC = () => {
   const [priorityList, setPriorityList] = useState<ApiNotification[]>([]);
   const [isComputing, setIsComputing] = useState<boolean>(false);
 
-  // Fetch ALL notifications (no limit) to compute priority across the entire dataset
   const { notifications, loading, error } = useNotifications();
 
   useEffect(() => {
@@ -32,10 +32,8 @@ const PriorityInboxPage: React.FC = () => {
 
       setIsComputing(true);
       try {
-        // Step 1: Compute top N notifications using the MinHeap algorithm
         const topN = await getTopNNotifications(notifications, validN);
         
-        // Step 2: Apply the type filter *after* computing top N
         let finalResults = topN;
         if (filterType !== "All") {
           finalResults = topN.filter(notif => notif.Type === filterType);
@@ -44,10 +42,6 @@ const PriorityInboxPage: React.FC = () => {
         if (isMounted) {
           setPriorityList(finalResults);
           Log("frontend", "info", "page", `Priority list computed for top ${validN} notifications`);
-          
-          if (finalResults.length === 0 && topN.length > 0) {
-            Log("frontend", "warn", "page", "No notifications matched current priority filter");
-          }
         }
       } finally {
         if (isMounted) setIsComputing(false);
@@ -68,36 +62,62 @@ const PriorityInboxPage: React.FC = () => {
       <Head>
         <title>Priority Inbox | Campus Notifications</title>
       </Head>
-      <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
+      <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 8 }}>
         <Navbar />
-        <Container maxWidth="md" sx={{ py: 4 }}>
-          <Box mb={4}>
-            <Typography variant="h4" component="h1" gutterBottom>
-              Priority Inbox
-            </Typography>
-            <Typography variant="subtitle1" color="text.secondary">
-              {isValidN ? `Showing top ${n} notifications by importance` : "Showing priority notifications"}
-            </Typography>
-          </Box>
+        <Container maxWidth="md" sx={{ mt: { xs: 4, md: 8 } }}>
+          <Stack spacing={4}>
+            <Box>
+              <Stack direction="row" spacing={1.5} alignItems="center" mb={1}>
+                <AutoAwesomeIcon color="primary" sx={{ fontSize: 32 }} />
+                <Typography variant="h3" component="h1" sx={{ fontWeight: 800 }}>
+                  Priority Inbox
+                </Typography>
+              </Stack>
+              <Typography variant="subtitle1" sx={{ color: "text.secondary", fontWeight: 500 }}>
+                {isValidN ? `AI-driven priority ranking for your top ${n} notifications.` : "Smart prioritization for your campus life."}
+              </Typography>
+            </Box>
 
-          <PriorityInboxFilter
-            n={n}
-            setN={setN}
-            filterType={filterType}
-            setFilterType={setFilterType}
-          />
+            <Paper 
+              elevation={0} 
+              sx={{ 
+                p: 3, 
+                borderRadius: 4, 
+                border: "1px solid rgba(226, 232, 240, 0.8)",
+                bgcolor: "white",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.02)"
+              }}
+            >
+              <PriorityInboxFilter
+                n={n}
+                setN={setN}
+                filterType={filterType}
+                setFilterType={setFilterType}
+              />
+            </Paper>
 
-          {!loading && !isComputing && priorityList.length === 0 && notifications.length > 0 && isValidN && (
-            <Alert severity="warning" sx={{ mb: 3 }}>
-              No top-{n} notifications match the "{filterType}" filter. Try changing the filter type.
-            </Alert>
-          )}
+            {!loading && !isComputing && priorityList.length === 0 && notifications.length > 0 && isValidN && (
+              <Alert 
+                severity="info" 
+                variant="outlined"
+                sx={{ 
+                  borderRadius: 3,
+                  borderColor: "rgba(37, 99, 235, 0.1)",
+                  bgcolor: "rgba(37, 99, 235, 0.02)",
+                  color: "primary.dark",
+                  "& .MuiAlert-icon": { color: "primary.main" }
+                }}
+              >
+                No top-{n} notifications match the "{filterType}" filter. Try adjusting your selection.
+              </Alert>
+            )}
 
-          <NotificationList
-            notifications={priorityList}
-            loading={loading || isComputing}
-            error={error}
-          />
+            <NotificationList
+              notifications={priorityList}
+              loading={loading || isComputing}
+              error={error}
+            />
+          </Stack>
         </Container>
       </Box>
     </>

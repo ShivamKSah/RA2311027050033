@@ -8,6 +8,8 @@ import {
   InputLabel,
   SelectChangeEvent,
   FormHelperText,
+  Typography,
+  Stack,
 } from "@mui/material";
 import { Log } from "logging-middleware/src";
 
@@ -49,40 +51,54 @@ const PriorityInboxFilter: React.FC<PriorityInboxFilterProps> = ({
   const isNInvalid = isNaN(n) || n < 1 || n > 50;
 
   return (
-    <Box
-      display="flex"
-      gap={2}
-      mb={3}
-      flexDirection={{ xs: "column", sm: "row" }}
-      alignItems={{ xs: "stretch", sm: "flex-start" }}
+    <Stack
+      direction={{ xs: "column", sm: "row" }}
+      spacing={3}
+      alignItems="center"
     >
-      <FormControl sx={{ minWidth: 200 }}>
-        <InputLabel id="type-filter-label">Notification Type</InputLabel>
-        <Select
-          labelId="type-filter-label"
-          value={filterType}
-          label="Notification Type"
-          onChange={handleTypeChange}
-        >
-          <MenuItem value="All">All Types</MenuItem>
-          <MenuItem value="Placement">Placement</MenuItem>
-          <MenuItem value="Result">Result</MenuItem>
-          <MenuItem value="Event">Event</MenuItem>
-        </Select>
-      </FormControl>
+      <Box sx={{ flex: 1 }}>
+        <Typography variant="body2" sx={{ mb: 1, fontWeight: 600, color: "text.secondary" }}>
+          Filter by Type
+        </Typography>
+        <FormControl fullWidth size="small">
+          <Select
+            value={filterType}
+            onChange={handleTypeChange}
+            sx={{ 
+              borderRadius: 2,
+              bgcolor: "background.paper",
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "rgba(226, 232, 240, 0.8)",
+              }
+            }}
+          >
+            <MenuItem value="All">All Categories</MenuItem>
+            <MenuItem value="Placement">Placements Only</MenuItem>
+            <MenuItem value="Result">Exam Results</MenuItem>
+            <MenuItem value="Event">Campus Events</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
 
-      <FormControl error={isNInvalid} sx={{ minWidth: 150 }}>
+      <Box sx={{ minWidth: { xs: "100%", sm: 160 } }}>
+        <Typography variant="body2" sx={{ mb: 1, fontWeight: 600, color: "text.secondary" }}>
+          Top N Results
+        </Typography>
         <TextField
-          label="Top N"
+          fullWidth
+          size="small"
           type="number"
           value={isNaN(n) ? "" : n}
           onChange={handleNChange}
           error={isNInvalid}
-          InputProps={{ inputProps: { min: 1, max: 50 } }}
+          InputProps={{ 
+            inputProps: { min: 1, max: 50 },
+            sx: { borderRadius: 2 }
+          }}
+          helperText={isNInvalid ? "1-50 only" : ""}
         />
-        {isNInvalid && <FormHelperText>Must be between 1 and 50</FormHelperText>}
-      </FormControl>
-    </Box>
+      </Box>
+    </Stack>
   );
 };
 
