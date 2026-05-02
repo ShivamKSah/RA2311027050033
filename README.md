@@ -150,8 +150,18 @@ Commits are made at logical milestones throughout development:
 
 ## Screenshots
 
-Screenshots of both desktop and mobile views are available in:
-notification_app_fe/screenshots/
+### Priority Algorithm (Stage 1)
+![Priority Algorithm Output](notification_app_fe/screenshots/stage1/priority_algorithm_output.png)
+
+### Desktop Views
+| All Notifications | Priority Inbox |
+|-------------------|----------------|
+| ![All Notifications Desktop](notification_app_fe/screenshots/desktop/all_notifications_desktop.png) | ![Priority Inbox Desktop](notification_app_fe/screenshots/desktop/priority_inbox_desktop.png) |
+
+### Mobile Views
+| All Notifications | Priority Inbox |
+|-------------------|----------------|
+| ![All Notifications Mobile](notification_app_fe/screenshots/mobile/all_notifications_mobile.png) | ![Priority Inbox Mobile](notification_app_fe/screenshots/mobile/priority_inbox_mobile.png) |
 
 ---
 
